@@ -1,0 +1,93 @@
+  <style>
+    body {
+       transition: background-color 2s ease; /* Add transition to smooth the background changes */
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+        }
+        .input-box {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 80px;
+             position: relative; /* for absolute positioning of indicators */
+            transition: border-color 0.3s;
+        }
+         .input-box-indicator{
+              position: absolute;
+                top: 50%;
+               right: 5px;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            display:none;
+           }
+       .input-box-error{
+           border-color: red;
+       }
+       .input-box-success{
+          border-color: green;
+       }
+       .input-box-disabled{
+          background-color: #eee;
+           cursor: not-allowed;
+       }
+      .reminder-button {
+        padding: 10px 15px;
+          margin: 5px;
+          border-radius: 4px;
+          background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        cursor: pointer;
+        }
+
+         .reminder-button.active {
+              background-color: #007bff;
+              color: white;
+        }
+
+         .reminder-settings {
+            margin-bottom: 20px;
+        }
+           .stats-container {
+                margin: 20px;
+                 border: 1px solid #ccc;
+                padding: 10px;
+                 border-radius: 4px;
+            }
+         .stats-header {
+               font-size: 1.2em;
+             font-weight: bold;
+             margin-bottom: 5px;
+        }
+         .stats-item {
+                margin: 5px 0;
+           }
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: green;
+            border-radius: 5px;
+            width: 0; /*initial width*/
+            transition: width 0.3s ease-in-out;
+        }
+
+           .feedback-text {
+           text-align: center;
+              font-size: 1.2em;
+             font-weight: bold;
+            margin-top: 10px;
+        }
+
+
+    </style>
