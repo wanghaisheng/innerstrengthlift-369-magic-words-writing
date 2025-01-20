@@ -1,132 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Input Boxes</title>
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+        }
+        .input-box {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 80px;
+            transition: border-color 0.3s; /* Animation for status changes */
+        }
+       .input-box-error{
+           border-color: red;
+       }
+       .input-box-success{
+          border-color: green;
+       }
+       .input-box-disabled{
+          background-color: #eee;
+           cursor: not-allowed;
+       }
+      .reminder-button {
+        padding: 10px 15px;
+          margin: 5px;
+          border-radius: 4px;
+          background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        cursor: pointer;
+        }
 
-  <!-- SEO Meta Tags -->
-  <meta name="description" content="A mobile simulator designed to demonstrate mobile interface design.">
-  <meta name="keywords" content="mobile, simulator, mobile design, mobile app">
-  <meta name="author" content="Your Name or Company">
-  <meta http-equiv="Content-Language" content="en">
+         .reminder-button.active {
+              background-color: #007bff;
+              color: white;
+        }
 
-  <!-- Canonical Link -->
-  <link rel="canonical" href="https://www.yourwebsite.com/pc-simulator" />
+         .reminder-settings {
+            margin-bottom: 20px;
+        }
 
-  <!-- Open Graph for Social Media -->
-  <meta property="og:title" content="PC Simulator">
-  <meta property="og:description" content="A mobile simulator designed to demonstrate mobile interface design.">
-  <meta property="og:image" content="https://www.yourwebsite.com/pc-simulator-image.jpg">
-  <meta property="og:url" content="https://www.yourwebsite.com/pc-simulator">
-  <meta property="og:type" content="website">
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="PC Simulator">
-  <meta name="twitter:description" content="A mobile simulator designed to demonstrate mobile interface design.">
-  <meta name="twitter:image" content="https://www.yourwebsite.com/pc-simulator-image.jpg">
-  <meta name="twitter:creator" content="@yourtwitterhandle">
-
-  <!-- Favicon -->
-  <link rel="icon" href="https://www.yourwebsite.com/favicon.ico" type="image/x-icon">
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-    gtag('config', 'UA-XXXXX-Y');
-  </script>
-
-  <!-- Microsoft Clarity -->
-  <script type="text/javascript">
-    (function(c,l,a,r,i,t,y) {
-      window.clarity=window.clarity||function(){(clarity.q=clarity.q||[]).push(arguments)};
-      clarity('set', 'anonymizeIP', true);
-      i=l.createElement('script');i.async=1;i.src=r;i.type='text/javascript';
-      t=l.getElementsByTagName('script')[0];t.parentNode.insertBefore(i,t);
-    })(document,window,'script','https://www.clarity.ms/tag/XXXXXX');
-  </script>
-
-  <title>PC Simulator</title>
-
-  <style>
-    /* Global Styles */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
-
-    .mobile-container {
-      width: 360px;
-      height: 640px;
-      border: 16px solid black;
-      border-radius: 16px;
-      background-color: #fff;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .content {
-      font-size: 1.2rem;
-      color: #333;
-    }
-
-    /* Adjustments for PC */
-    @media (min-width: 768px) {
-      .mobile-container {
-        width: 600px;
-        height: 1000px;
-      }
-
-      .content {
-        font-size: 1.5rem;
-      }
-    }
-
-    @media (min-width: 1024px) {
-      .mobile-container {
-        width: 800px;
-        height: 1400px;
-      }
-
-      .content {
-        font-size: 1.8rem;
-      }
-    }
-
-    /* Additional responsiveness for larger screens */
-    @media (min-width: 1200px) {
-      body {
-        justify-content: flex-start;
-      }
-
-      .mobile-container {
-        margin-top: 50px;
-      }
-    }
-  </style>
+    </style>
 </head>
-
 <body>
-  <div class="mobile-container">
-    <div class="content">
-      <p>Mobile Simulator Screen</p>
-      <p>PC Version: Adjusted for larger screens.</p>
+     <div style="margin: 20px;" class="reminder-settings">
+           <p>Reminders:</p>
+           <button id="morningReminder" class="reminder-button" onclick="toggleReminder('morning')">Morning</button>
+            <button id="noonReminder" class="reminder-button" onclick="toggleReminder('noon')">Noon</button>
+            <button id="eveningReminder" class="reminder-button" onclick="toggleReminder('evening')">Evening</button>
+              <button class="reminder-button" onclick="set369()">3-6-9</button>
+        </div>
+    <div style="margin: 20px;">
+         <label for="sentenceSelect">Select Sentence: </label>
+        <select id="sentenceSelect" onchange="loadSelectedSentence()">
+        </select>
+        <br><br>
+        <label for="addSentenceInput">Add Sentence: </label>
+        <input type="text" id="addSentenceInput">
+        <button onclick="addSentence()">Add</button>
+          <br><br>
+        <button onclick="setOption(1)">Option 1 (Placeholders)</button>
+        <button onclick="setOption(2)">Option 2 (Retry)</button>
+        <p> Input option: <span id="optionDisplay">1</span></p>
     </div>
-  </div>
-</body>
+    <div id="inputContainer" class="container">
+        <!-- Input boxes will be dynamically added here using Javascript -->
+    </div>
 
+    <script>
+       let currentOption = 1; // Default to option 1
+      let sentences = {
+           "The quick brown fox jumps over the lazy dog": "Sentence 1: The quick brown fox...",
+           "A journey of a thousand miles begins with a single step": "Sentence 2: A journey of a thousand...",
+            "To be or not to be that is the question": "Sentence 3: To be or not to be...",
+            "The best is yet to come": "Sentence 4: The best is yet to come",
+        };
+        let currentSentence = "";
+           let userAddedSentences = JSON.parse(localStorage.getItem('userAddedSentences')) || {};
+            let reminderSettings = JSON.parse(localStorage.getItem('reminderSettings')) || {
+            morning: false,
+            noon: false,
+             evening: false
+            };
+
+      function set369(){
+            reminderSettings.morning = true;
+            reminderSettings.noon = true;
+             reminderSettings.evening = true;
+          updateReminderUI();
+           saveReminderSettings();
+
+      }
+    function toggleReminder(reminder){
+          reminderSettings[reminder] = !reminderSettings[reminder];
+         updateReminderUI();
+         saveReminderSettings();
+
+       }
+
+        function updateReminderUI() {
+            const morningButton = document.getElementById("morningReminder");
+           const noonButton = document.getElementById("noonReminder");
+           const eveningButton = document.getElementById("eveningReminder");
+
+         morningButton.classList.toggle('active', reminderSettings.morning);
+            noonButton.classList.toggle('active', reminderSettings.noon);
+           eveningButton.classList.toggle('active', reminderSettings.evening);
+        }
+          function saveReminderSettings(){
+                localStorage.setItem('reminderSettings', JSON.stringify(reminderSettings));
+          }
+
+        function populateSentenceSelect(){
+           const selectElement = document.getElementById("sentenceSelect");
+           selectElement.innerHTML = ""; // Clear options
+
+           // Load default sentences
+            for (const key in sentences) {
+                  let option = document.createElement("option");
+                   option.value = key;
+                  option.text = sentences[key];
+                   selectElement.add(option);
+                }
+              //Load user added sentences
+              for (const key in userAddedSentences) {
+                   let option = document.createElement("option");
+                    option.value = key;
+                    option.text = "User Added: " + key;
+                     selectElement.add(option);
+               }
+
+           if (currentSentence === ""){
+              currentSentence = Object.keys(sentences)[0]
+           }
+
+              selectElement.value = currentSentence;  // Set the selected item after rendering list
+        }
+
+       function addSentence(){
+          const addSentenceInput = document.getElementById("addSentenceInput");
+           const newSentence = addSentenceInput.value.trim();
+           if (newSentence && !userAddedSentences[newSentence]){
+              userAddedSentences[newSentence] = newSentence;
+              localStorage.setItem('userAddedSentences', JSON.stringify(userAddedSentences));
+              currentSentence = newSentence;
+             populateSentenceSelect();
+              generateInputBoxes();
+           }
+        }
+        function loadSelectedSentence(){
+             const selectElement = document.getElementById("sentenceSelect");
+            currentSentence = selectElement.value;
+              generateInputBoxes();
+        }
+
+        function setOption(option) {
+           currentOption = option;
+           document.getElementById("optionDisplay").innerText = option;
+            generateInputBoxes();
+
+        }
+
+        function generateInputBoxes() {
+           const inputContainer = document.getElementById("inputContainer");
+           inputContainer.innerHTML = "";  // Clear existing boxes
+
+            let words = currentSentence.split(" ");
+
+             for (let i = 0; i < words.length; i++) {
+                  let input_box = document.createElement("input");
+                   input_box.type = "text";
+                   input_box.classList.add("input-box");
+                   input_box.setAttribute("data-index", i);
+                   input_box.setAttribute("data-expected-word", words[i]); //Store expected word
+                    if(currentOption === 1){
+                         input_box.placeholder = words[i];
+                    }
+
+                   input_box.addEventListener('input', function(){
+                        handleInput(this); // Handle input validation
+                   })
+                   inputContainer.appendChild(input_box);
+
+
+             }
+
+        }
+           function handleInput(box){
+                  let input_text = box.value;
+                    if(currentOption === 1) return; // No need to validate
+                     let index = box.getAttribute("data-index");
+                     let expected_word = box.getAttribute("data-expected-word");
+                   let attempts = box.getAttribute("data-attempts") || 0; //Get retry attemps
+
+                  if (attempts < 3){
+                      if (input_text === expected_word) {
+                        box.classList.add("input-box-success");
+                        box.classList.remove("input-box-error");
+                        box.disabled=true;
+                     }else{
+                            box.classList.add("input-box-error");
+                            box.classList.remove("input-box-success");
+                            attempts++;
+                            box.setAttribute("data-attempts", attempts);
+                          if(attempts >= 3){
+                              box.classList.add("input-box-disabled");
+                              box.disabled = true; //disable input
+                          }
+                        }
+                   }else{
+                          box.classList.add("input-box-disabled");
+                   }
+              }
+
+
+      populateSentenceSelect();
+      generateInputBoxes();
+     updateReminderUI();
+
+
+    </script>
+</body>
 </html>
