@@ -1,4 +1,4 @@
-    <script>
+  <script>
         // ---- Timeframe Constants and Functions ----
           const MORNING_START = 6;
           const MORNING_END = 11;
@@ -159,20 +159,20 @@
                  localStorage.setItem('trackingData', JSON.stringify(trackingData));
             }
 
-       function generateInputBoxes() {
-            const inputContainer = document.getElementById("inputContainer");
+        function generateInputBoxes() {
+           const inputContainer = document.getElementById("inputContainer");
            inputContainer.innerHTML = "";  // Clear existing boxes
              updateUI();
 
             let words = currentSentence.split(" ");
-             const progressBar = document.getElementById('progressBar');
+            const progressBar = document.getElementById('progressBar');
                 progressBar.style.width = '0%';
              for (let i = 0; i < words.length; i++) {
                   let input_box = document.createElement("input");
                     input_box.type = "text";
                   input_box.classList.add("input-box");
-                    let indicator = document.createElement("span");
-                     indicator.classList.add("input-box-indicator");
+                     let indicator = document.createElement("span");
+                    indicator.classList.add("input-box-indicator");
                     input_box.appendChild(indicator);
                    input_box.setAttribute("data-index", i);
                  input_box.setAttribute("data-expected-word", words[i]); //Store expected word
@@ -186,18 +186,17 @@
                    inputContainer.appendChild(input_box);
 
                }
-              let timeFrame = getCurrentTimeframe();
+               let timeFrame = getCurrentTimeframe();
             if(timeFrame == null) return;
             let practiceStatus = getPracticeStatus();
             let repetitions = 0;
          if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-             repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
-              }
+              repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
+            }
             if(repetitions === getRepetitionCounts(timeFrame)){
                showFeedback("Get Ready!");
-            }
+             }
           }
-
          function startSentencePractice(){
                 let timeFrame = getCurrentTimeframe();
                 if(timeFrame == null) return; // Can only proceed with timeFrame
@@ -250,118 +249,138 @@
              }
            let backgroundColorIndex = 0;
             const backgroundColors = ["#f0f0f0", "#e0e0e0", "#d0d0d0", "#c0c0c0"]; //Define subtle color shifts
-        function changeBackgroundColor() {
-                const body = document.body;
+           function changeBackgroundColor() {
+                 const body = document.body;
                   body.style.backgroundColor = backgroundColors[backgroundColorIndex];
                      backgroundColorIndex = (backgroundColorIndex + 1) % backgroundColors.length;
-             }
+              }
 
+           const affirmations = [
+               "I am capable.",
+                "I am strong.",
+             "I am confident.",
+               "I am improving.",
+               "I am focused.",
+                "I am resilient."
+            ];
+        let affirmationIndex = 0; // Track which index of the array we are on.
+        function showAffirmation() {
+            const feedbackText = document.getElementById('feedbackText');
+             feedbackText.innerText = affirmations[affirmationIndex];
+              feedbackText.style.display = 'block';
+
+              setTimeout(function() {
+                   feedbackText.style.display = 'none';
+                   }, 1500);
+                 affirmationIndex = (affirmationIndex + 1) % affirmations.length;
+         }
 
            function handleInput(box){
                let input_text = box.value;
-                let indicator = box.querySelector('.input-box-indicator');
-                 if(currentOption === 1) return; // No need to validate
-                 let index = box.getAttribute("data-index");
+               let indicator = box.querySelector('.input-box-indicator');
+                if(currentOption === 1) return; // No need to validate
+                let index = box.getAttribute("data-index");
                   let expected_word = box.getAttribute("data-expected-word");
                 let attempts = box.getAttribute("data-attempts") || 0; //Get retry attemps
 
                 if (attempts < 3){
                      if (input_text === expected_word) {
                         box.classList.add("input-box-success");
-                        box.classList.remove("input-box-error");
-                       box.disabled=true;
-                        indicator.textContent = '✓';
+                          box.classList.remove("input-box-error");
+                        box.disabled=true;
+                       indicator.textContent = '✓';
                         indicator.style.display = "inline"
 
 
-                     }else{
+                    }else{
                         box.classList.add("input-box-error");
                          box.classList.remove("input-box-success");
                         attempts++;
                          box.setAttribute("data-attempts", attempts);
-                          indicator.textContent = 'X'
+                        indicator.textContent = 'X'
                           indicator.style.display = "inline"
-                       if(attempts >= 3){
-                            box.classList.add("input-box-disabled");
-                           box.disabled = true; //disable input
+                        if(attempts >= 3){
+                             box.classList.add("input-box-disabled");
+                            box.disabled = true; //disable input
                       }
                     }
                 }else{
                       box.classList.add("input-box-disabled");
                    }
-               let completed = true;
+              let completed = true;
                 //Loop and check
-               const inputBoxes = document.querySelectorAll('#inputContainer .input-box');
-                 inputBoxes.forEach((input) => {
-                   if (!input.classList.contains("input-box-success")){
-                       completed = false; // Break on first failed box
-                   }
-                })
+                const inputBoxes = document.querySelectorAll('#inputContainer .input-box');
+                inputBoxes.forEach((input) => {
+                    if (!input.classList.contains("input-box-success")){
+                        completed = false; // Break on first failed box
+                    }
+               })
 
                if(completed){
-                   completedSequence();
-               }
+                     completedSequence();
+                }
 
 
            }
-        function updateUI(){
-               const timeFrameDisplay = document.getElementById('timeFrameDisplay');
+         function updateUI(){
+            const timeFrameDisplay = document.getElementById('timeFrameDisplay');
              const repetitionDisplay = document.getElementById("repetitionDisplay");
             const dailyMorningAttemptsDisplay = document.getElementById('dailyMorningAttempts');
-            const dailyMorningSuccessesDisplay = document.getElementById('dailyMorningSuccesses');
-             const dailyNoonAttemptsDisplay = document.getElementById('dailyNoonAttempts');
-             const dailyNoonSuccessesDisplay = document.getElementById('dailyNoonSuccesses');
-            const dailyEveningAttemptsDisplay = document.getElementById('dailyEveningAttempts');
+             const dailyMorningSuccessesDisplay = document.getElementById('dailyMorningSuccesses');
+           const dailyNoonAttemptsDisplay = document.getElementById('dailyNoonAttempts');
+            const dailyNoonSuccessesDisplay = document.getElementById('dailyNoonSuccesses');
+           const dailyEveningAttemptsDisplay = document.getElementById('dailyEveningAttempts');
             const dailyEveningSuccessesDisplay = document.getElementById('dailyEveningSuccesses');
 
           const weeklyMorningAttemptsDisplay = document.getElementById('weeklyMorningAttempts');
              const weeklyMorningSuccessesDisplay = document.getElementById('weeklyMorningSuccesses');
-           const weeklyNoonAttemptsDisplay = document.getElementById('weeklyNoonAttempts');
-          const weeklyNoonSuccessesDisplay = document.getElementById('weeklyNoonSuccesses');
+            const weeklyNoonAttemptsDisplay = document.getElementById('weeklyNoonAttempts');
+            const weeklyNoonSuccessesDisplay = document.getElementById('weeklyNoonSuccesses');
            const weeklyEveningAttemptsDisplay = document.getElementById('weeklyEveningAttempts');
            const weeklyEveningSuccessesDisplay = document.getElementById('weeklyEveningSuccesses');
            const progressBar = document.getElementById('progressBar');
 
                 let timeFrame = getCurrentTimeframe();
-                 timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
-                 let practiceStatus = getPracticeStatus();
-                 let trackingData = getTrackingData();
-                  let repetitions = 0;
+                timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
+               let practiceStatus = getPracticeStatus();
+                let trackingData = getTrackingData();
+                let repetitions = 0;
                  if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-                      repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
-                   }
-                repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
+                     repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
+                    }
+                 repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
                 if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
                     let maxRepetitions =  getRepetitionCounts(timeFrame)
                     let timesCompleted  = practiceStatus[timeFrame][currentSentence].timesCompleted || 0;
                       let progress = (timesCompleted/maxRepetitions) * 100;
-                      progressBar.style.width = progress + '%';
-                }else{
-                     progressBar.style.width = '0%';
-                   }
+                    progressBar.style.width = progress + '%';
+                  }else{
+                       progressBar.style.width = '0%';
+                  }
 
                   dailyMorningAttemptsDisplay.innerText = trackingData.daily.morning.attempts;
                    dailyMorningSuccessesDisplay.innerText = trackingData.daily.morning.successes;
-                   dailyNoonAttemptsDisplay.innerText = trackingData.daily.noon.attempts;
+                  dailyNoonAttemptsDisplay.innerText = trackingData.daily.noon.attempts;
                     dailyNoonSuccessesDisplay.innerText = trackingData.daily.noon.successes;
-                  dailyEveningAttemptsDisplay.innerText = trackingData.daily.evening.attempts;
+                 dailyEveningAttemptsDisplay.innerText = trackingData.daily.evening.attempts;
                   dailyEveningSuccessesDisplay.innerText = trackingData.daily.evening.successes;
-                 weeklyMorningAttemptsDisplay.innerText = trackingData.weekly.morning.attempts;
-                   weeklyMorningSuccessesDisplay.innerText = trackingData.weekly.morning.successes;
-                    weeklyNoonAttemptsDisplay.innerText = trackingData.weekly.noon.attempts;
+                  weeklyMorningAttemptsDisplay.innerText = trackingData.weekly.morning.attempts;
+                  weeklyMorningSuccessesDisplay.innerText = trackingData.weekly.morning.successes;
+                 weeklyNoonAttemptsDisplay.innerText = trackingData.weekly.noon.attempts;
                   weeklyNoonSuccessesDisplay.innerText = trackingData.weekly.noon.successes;
-                weeklyEveningAttemptsDisplay.innerText = trackingData.weekly.evening.attempts;
+                 weeklyEveningAttemptsDisplay.innerText = trackingData.weekly.evening.attempts;
                  weeklyEveningSuccessesDisplay.innerText = trackingData.weekly.evening.successes;
 
-              changeBackgroundColor();
-
+               changeBackgroundColor();
+            showAffirmation();
           }
+
 
        // ---- Initialization ----
       populateSentenceSelect();
       generateInputBoxes();
       updateReminderUI();
-    updateUI();
+      updateUI();
        startSentencePractice(); //Initial start of sequence
-      setInterval(updateUI, 1000); //Update every second to show the correct time frame
+       setInterval(updateUI, 1000); //Update every second to show the correct time frame
     </script>
