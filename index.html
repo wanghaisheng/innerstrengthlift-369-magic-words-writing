@@ -1,3 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Practice Challenge</title>
+    <style>
+        body {
+           transition: background-color 2s ease; /* Add transition to smooth the background changes */
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+        }
+        .input-box {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 80px;
+             position: relative; /* for absolute positioning of indicators */
+            transition: border-color 0.3s;
+        }
+         .input-box-indicator{
+              position: absolute;
+                top: 50%;
+               right: 5px;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            display:none;
+           }
+       .input-box-error{
+           border-color: red;
+       }
+       .input-box-success{
+          border-color: green;
+       }
+       .input-box-disabled{
+          background-color: #eee;
+           cursor: not-allowed;
+       }
+      .reminder-button {
+        padding: 10px 15px;
+          margin: 5px;
+          border-radius: 4px;
+          background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        cursor: pointer;
+        }
+
+         .reminder-button.active {
+              background-color: #007bff;
+              color: white;
+        }
+
+         .reminder-settings {
+            margin-bottom: 20px;
+        }
+           .stats-container {
+                margin: 20px;
+                 border: 1px solid #ccc;
+                padding: 10px;
+                 border-radius: 4px;
+            }
+         .stats-header {
+               font-size: 1.2em;
+             font-weight: bold;
+             margin-bottom: 5px;
+        }
+         .stats-item {
+                margin: 5px 0;
+           }
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: green;
+            border-radius: 5px;
+            width: 0; /*initial width*/
+            transition: width 0.3s ease-in-out;
+        }
+
+           .feedback-text {
+           text-align: center;
+              font-size: 1.2em;
+             font-weight: bold;
+            margin-top: 10px;
+        }
+       .settings-container {
+            margin: 20px;
+            padding: 10px;
+             border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+   <div style="margin: 20px;" class="reminder-settings">
+           <p>Reminders:</p>
+           <button id="morningReminder" class="reminder-button" onclick="toggleReminder('morning')">Morning</button>
+            <button id="noonReminder" class="reminder-button" onclick="toggleReminder('noon')">Noon</button>
+            <button id="eveningReminder" class="reminder-button" onclick="toggleReminder('evening')">Evening</button>
+              <button class="reminder-button" onclick="set369()">3-6-9</button>
+        </div>
+    <div style="margin: 20px;">
+         <label for="sentenceSelect">Select Sentence: </label>
+        <select id="sentenceSelect" onchange="loadSelectedSentence()">
+        </select>
+         <br><br>
+        <label for="addSentenceInput">Add Sentence: </label>
+        <input type="text" id="addSentenceInput">
+        <button onclick="addSentence()">Add</button>
+          <br><br>
+        <button onclick="setOption(1)">Option 1 (Placeholders)</button>
+        <button onclick="setOption(2)">Option 2 (Retry)</button>
+         <p> Input option: <span id="optionDisplay">1</span></p>
+          <p> Current Timeframe: <span id="timeFrameDisplay">Unknown</span></p>
+           <p>Remaining Repetitions: <span id="repetitionDisplay"></span></p>
+        <div class="progress-container">
+           <div id="progressBar" class="progress-bar"></div>
+          </div>
+         <div id="feedbackText" class="feedback-text" style="display: none"></div>
+    </div>
+
+     <div class="stats-container">
+          <div class="stats-header">Daily Stats:</div>
+           <div class="stats-item">Morning: Attempts: <span id="dailyMorningAttempts">0</span>, Successes: <span id="dailyMorningSuccesses">0</span></div>
+           <div class="stats-item">Noon: Attempts: <span id="dailyNoonAttempts">0</span>, Successes: <span id="dailyNoonSuccesses">0</span></div>
+           <div class="stats-item">Evening: Attempts: <span id="dailyEveningAttempts">0</span>, Successes: <span id="dailyEveningSuccesses">0</span></div>
+         <div class="stats-header">Weekly Stats:</div>
+         <div class="stats-item">Morning: Attempts: <span id="weeklyMorningAttempts">0</span>, Successes: <span id="weeklyMorningSuccesses">0</span></div>
+            <div class="stats-item">Noon: Attempts: <span id="weeklyNoonAttempts">0</span>, Successes: <span id="weeklyNoonSuccesses">0</span></div>
+          <div class="stats-item">Evening: Attempts: <span id="weeklyEveningAttempts">0</span>, Successes: <span id="weeklyEveningSuccesses">0</span></div>
+      </div>
+       <div class="settings-container">
+        <button onclick="clearAllData()">Clear All Data</button>
+     </div>
+    <div id="inputContainer" class="container">
+        <!-- Input boxes will be dynamically added here using Javascript -->
+    </div>
+
     <script>
         // ---- Timeframe Constants and Functions ----
           const MORNING_START = 6;
@@ -159,10 +308,19 @@
                  localStorage.setItem('trackingData', JSON.stringify(trackingData));
             }
 
+      function clearAllData(){
+             localStorage.clear();
+            //Re-render the HTML
+            populateSentenceSelect();
+              generateInputBoxes();
+            updateReminderUI();
+            updateUI();
+           startSentencePractice();
+      }
        function generateInputBoxes() {
             const inputContainer = document.getElementById("inputContainer");
            inputContainer.innerHTML = "";  // Clear existing boxes
-              updateUI();
+             updateUI();
 
             let words = currentSentence.split(" ");
             const progressBar = document.getElementById('progressBar');
@@ -171,7 +329,7 @@
                   let input_box = document.createElement("input");
                     input_box.type = "text";
                   input_box.classList.add("input-box");
-                     let indicator = document.createElement("span");
+                   let indicator = document.createElement("span");
                     indicator.classList.add("input-box-indicator");
                     input_box.appendChild(indicator);
                    input_box.setAttribute("data-index", i);
@@ -184,19 +342,19 @@
                       handleInput(this); // Handle input validation
                     })
                    inputContainer.appendChild(input_box);
-
                }
-               let timeFrame = getCurrentTimeframe();
+                let timeFrame = getCurrentTimeframe();
             if(timeFrame == null) return;
-            let practiceStatus = getPracticeStatus();
+           let practiceStatus = getPracticeStatus();
             let repetitions = 0;
          if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-             repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
-              }
-            if(repetitions === getRepetitionCounts(timeFrame)){
-               showFeedback("Get Ready!");
+              repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
             }
+            if(repetitions === getRepetitionCounts(timeFrame)){
+                 showFeedback("Get Ready!");
+             }
           }
+
          function startSentencePractice(){
                 let timeFrame = getCurrentTimeframe();
                 if(timeFrame == null) return; // Can only proceed with timeFrame
@@ -210,7 +368,7 @@
                 }
                 practiceStatus[timeFrame][currentSentence].attempts++;
                   setPracticeStatus(practiceStatus) //Save to local storage
-                 updateUI();
+                  updateUI();
            }
 
          function completedSequence(){
@@ -233,128 +391,153 @@
                      showFeedback("Completed a repetition, keep going!");
                   }
 
-
                 setTrackingData(trackingData);
                   setPracticeStatus(practiceStatus)
                   updateUI(); //Update visual for current status.
              }
 
            function showFeedback(text){
-                 const feedbackText = document.getElementById('feedbackText');
-                 feedbackText.innerText = text;
-                feedbackText.style.display = 'block';
+                const feedbackText = document.getElementById('feedbackText');
+               feedbackText.innerText = text;
+               feedbackText.style.display = 'block';
 
                   setTimeout(function() {
-                         feedbackText.style.display = 'none';
-                     }, 2000);
-             }
+                    feedbackText.style.display = 'none';
+                }, 2000);
+          }
+         let backgroundColorIndex = 0;
+            const backgroundColors = ["#f0f0f0", "#e0e0e0", "#d0d0d0", "#c0c0c0"]; //Define subtle color shifts
+        function changeBackgroundColor() {
+                const body = document.body;
+                  body.style.backgroundColor = backgroundColors[backgroundColorIndex];
+                     backgroundColorIndex = (backgroundColorIndex + 1) % backgroundColors.length;
+              }
+
+            const affirmations = [
+               "I am capable.",
+                "I am strong.",
+                "I am confident.",
+                "I am improving.",
+                 "I am focused.",
+                "I am resilient."
+           ];
+          let affirmationIndex = 0; // Track which index of the array we are on.
+          function showAffirmation() {
+               const feedbackText = document.getElementById('feedbackText');
+               feedbackText.innerText = affirmations[affirmationIndex];
+               feedbackText.style.display = 'block';
+
+                 setTimeout(function() {
+                       feedbackText.style.display = 'none';
+                 }, 1500);
+             affirmationIndex = (affirmationIndex + 1) % affirmations.length;
+           }
 
            function handleInput(box){
-               let input_text = box.value;
-                let indicator = box.querySelector('.input-box-indicator');
+              let input_text = box.value;
+              let indicator = box.querySelector('.input-box-indicator');
                 if(currentOption === 1) return; // No need to validate
                  let index = box.getAttribute("data-index");
                   let expected_word = box.getAttribute("data-expected-word");
-                let attempts = box.getAttribute("data-attempts") || 0; //Get retry attemps
+                 let attempts = box.getAttribute("data-attempts") || 0; //Get retry attemps
 
                 if (attempts < 3){
                      if (input_text === expected_word) {
                         box.classList.add("input-box-success");
-                          box.classList.remove("input-box-error");
+                         box.classList.remove("input-box-error");
                         box.disabled=true;
-                         indicator.textContent = '✓';
+                      indicator.textContent = '✓';
                          indicator.style.display = "inline"
 
 
                     }else{
                         box.classList.add("input-box-error");
-                          box.classList.remove("input-box-success");
-                        attempts++;
+                        box.classList.remove("input-box-success");
+                       attempts++;
                           box.setAttribute("data-attempts", attempts);
-                           indicator.textContent = 'X'
-                          indicator.style.display = "inline"
-                       if(attempts >= 3){
+                            indicator.textContent = 'X'
+                           indicator.style.display = "inline"
+                        if(attempts >= 3){
                              box.classList.add("input-box-disabled");
-                            box.disabled = true; //disable input
-                       }
+                             box.disabled = true; //disable input
+                         }
                      }
                 }else{
-                      box.classList.add("input-box-disabled");
-                   }
+                       box.classList.add("input-box-disabled");
+                }
 
-                 let completed = true;
+            let completed = true;
                 //Loop and check
                 const inputBoxes = document.querySelectorAll('#inputContainer .input-box');
                 inputBoxes.forEach((input) => {
-                   if (!input.classList.contains("input-box-success")){
-                         completed = false; // Break on first failed box
+                    if (!input.classList.contains("input-box-success")){
+                        completed = false; // Break on first failed box
                    }
                 })
 
                 if(completed){
-                    completedSequence();
-                }
-
-
-           }
+                   completedSequence();
+               }
+         }
         function updateUI(){
             const timeFrameDisplay = document.getElementById('timeFrameDisplay');
-             const repetitionDisplay = document.getElementById("repetitionDisplay");
-            const dailyMorningAttemptsDisplay = document.getElementById('dailyMorningAttempts');
+            const repetitionDisplay = document.getElementById("repetitionDisplay");
+           const dailyMorningAttemptsDisplay = document.getElementById('dailyMorningAttempts');
             const dailyMorningSuccessesDisplay = document.getElementById('dailyMorningSuccesses');
-             const dailyNoonAttemptsDisplay = document.getElementById('dailyNoonAttempts');
-             const dailyNoonSuccessesDisplay = document.getElementById('dailyNoonSuccesses');
+            const dailyNoonAttemptsDisplay = document.getElementById('dailyNoonAttempts');
+            const dailyNoonSuccessesDisplay = document.getElementById('dailyNoonSuccesses');
             const dailyEveningAttemptsDisplay = document.getElementById('dailyEveningAttempts');
             const dailyEveningSuccessesDisplay = document.getElementById('dailyEveningSuccesses');
 
-          const weeklyMorningAttemptsDisplay = document.getElementById('weeklyMorningAttempts');
-             const weeklyMorningSuccessesDisplay = document.getElementById('weeklyMorningSuccesses');
+           const weeklyMorningAttemptsDisplay = document.getElementById('weeklyMorningAttempts');
+            const weeklyMorningSuccessesDisplay = document.getElementById('weeklyMorningSuccesses');
            const weeklyNoonAttemptsDisplay = document.getElementById('weeklyNoonAttempts');
-          const weeklyNoonSuccessesDisplay = document.getElementById('weeklyNoonSuccesses');
+            const weeklyNoonSuccessesDisplay = document.getElementById('weeklyNoonSuccesses');
            const weeklyEveningAttemptsDisplay = document.getElementById('weeklyEveningAttempts');
            const weeklyEveningSuccessesDisplay = document.getElementById('weeklyEveningSuccesses');
-            const progressBar = document.getElementById('progressBar');
-
+           const progressBar = document.getElementById('progressBar');
 
                 let timeFrame = getCurrentTimeframe();
-                 timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
+                timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
                  let practiceStatus = getPracticeStatus();
                  let trackingData = getTrackingData();
                   let repetitions = 0;
-                 if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-                      repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
-                   }
-                 repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
-                if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-                    let maxRepetitions =  getRepetitionCounts(timeFrame)
-                    let timesCompleted  = practiceStatus[timeFrame][currentSentence].timesCompleted || 0;
-                     let progress = (timesCompleted/maxRepetitions) * 100;
-                      progressBar.style.width = progress + '%';
-                }else{
-                       progressBar.style.width = '0%';
+                if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
+                     repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
                   }
+                repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
+               if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
+                    let maxRepetitions =  getRepetitionCounts(timeFrame)
+                   let timesCompleted  = practiceStatus[timeFrame][currentSentence].timesCompleted || 0;
+                     let progress = (timesCompleted/maxRepetitions) * 100;
+                    progressBar.style.width = progress + '%';
+               }else{
+                    progressBar.style.width = '0%';
+                 }
 
-                  dailyMorningAttemptsDisplay.innerText = trackingData.daily.morning.attempts;
-                   dailyMorningSuccessesDisplay.innerText = trackingData.daily.morning.successes;
-                   dailyNoonAttemptsDisplay.innerText = trackingData.daily.noon.attempts;
-                    dailyNoonSuccessesDisplay.innerText = trackingData.daily.noon.successes;
-                  dailyEveningAttemptsDisplay.innerText = trackingData.daily.evening.attempts;
+                 dailyMorningAttemptsDisplay.innerText = trackingData.daily.morning.attempts;
+                 dailyMorningSuccessesDisplay.innerText = trackingData.daily.morning.successes;
+                dailyNoonAttemptsDisplay.innerText = trackingData.daily.noon.attempts;
+                  dailyNoonSuccessesDisplay.innerText = trackingData.daily.noon.successes;
+                 dailyEveningAttemptsDisplay.innerText = trackingData.daily.evening.attempts;
                   dailyEveningSuccessesDisplay.innerText = trackingData.daily.evening.successes;
                  weeklyMorningAttemptsDisplay.innerText = trackingData.weekly.morning.attempts;
-                   weeklyMorningSuccessesDisplay.innerText = trackingData.weekly.morning.successes;
-                    weeklyNoonAttemptsDisplay.innerText = trackingData.weekly.noon.attempts;
-                  weeklyNoonSuccessesDisplay.innerText = trackingData.weekly.noon.successes;
+                 weeklyMorningSuccessesDisplay.innerText = trackingData.weekly.morning.successes;
+                weeklyNoonAttemptsDisplay.innerText = trackingData.weekly.noon.attempts;
+                 weeklyNoonSuccessesDisplay.innerText = trackingData.weekly.noon.successes;
                 weeklyEveningAttemptsDisplay.innerText = trackingData.weekly.evening.attempts;
-                 weeklyEveningSuccessesDisplay.innerText = trackingData.weekly.evening.successes;
+                  weeklyEveningSuccessesDisplay.innerText = trackingData.weekly.evening.successes;
+
+               changeBackgroundColor();
+               showAffirmation();
           }
+
 
        // ---- Initialization ----
       populateSentenceSelect();
       generateInputBoxes();
       updateReminderUI();
-      updateUI();
+       updateUI();
        startSentencePractice(); //Initial start of sequence
        setInterval(updateUI, 1000); //Update every second to show the correct time frame
-
-
     </script>
