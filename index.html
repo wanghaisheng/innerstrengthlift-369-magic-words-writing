@@ -98,226 +98,235 @@
         }
 
            .feedback-text {
-           text-align: center;
+               position: absolute;
+               top: 50%;
+               left: 50%;
+               transform: translate(-50%, -50%);
+                text-align: center;
               font-size: 1.2em;
              font-weight: bold;
             margin-top: 10px;
+               z-index: 1000; /* To ensure the feedback is on top of all other content */
+              opacity: 0; /* Initially invisible */
+              transition: opacity 0.5s ease; /* Transition for fade animation */
         }
+      .feedback-text.show {
+            opacity: 1;  /* Fade-in the text */
+       }
        .settings-container {
             margin: 20px;
             padding: 10px;
              border: 1px solid #ccc;
             border-radius: 4px;
         }
-    .settings-container label{
-         display: block;
-         margin-bottom: 5px;
-         }
-    .settings-container textarea, .settings-container input[type="text"] {
-         display: block;
-         margin-bottom: 10px;
-           }
-
+        .settings-container label{
+            display: block;
+             margin-bottom: 5px;
+          }
+       .settings-container textarea, .settings-container input[type="text"] {
+            display: block;
+             margin-bottom: 10px;
+          }
      .main-area {
-          margin: 20px;
-         text-align: center;
+         margin: 20px;
+        text-align: center;
      }
-    .navigation{
+     .navigation{
          text-align: center;
          margin-bottom: 20px;
      }
 
     .navigation a{
-          display: inline-block;
-          margin: 0 10px;
-          padding: 10px;
-          text-decoration: none;
-          border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-  #fillPage{
-        display: block;
-    }
+         display: inline-block;
+         margin: 0 10px;
+         padding: 10px;
+         text-decoration: none;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+      }
+   #fillPage{
+         display: block;
+     }
     #settingsPage, #statsPage{
-       display: none;
+        display: none;
     }
-   </style>
+    </style>
 </head>
 <body>
-     <div class="navigation">
-          <a href="#" onclick="showPage('fillPage')">Practice</a>
+    <div class="navigation">
+         <a href="#" onclick="showPage('fillPage')">Practice</a>
           <a href="#" onclick="showPage('settingsPage')">Settings</a>
-            <a href="#" onclick="showPage('statsPage')">Stats</a>
+           <a href="#" onclick="showPage('statsPage')">Stats</a>
     </div>
 
-  <div id="fillPage">
+ <div id="fillPage">
       <div class="reminder-settings">
            <p>Reminders:</p>
-           <button id="morningReminder" class="reminder-button" onclick="toggleReminder('morning')" title="Enable practice during morning timeframe.">Morning</button>
-            <button id="noonReminder" class="reminder-button" onclick="toggleReminder('noon')" title="Enable practice during noon timeframe.">Noon</button>
-            <button id="eveningReminder" class="reminder-button" onclick="toggleReminder('evening')" title="Enable practice during evening timeframe.">Evening</button>
-            <button class="reminder-button" onclick="set369()" title="Enable all timeframes for practice.">3-6-9</button>
-     </div>
-     <div class="main-area">
-          <label for="sentenceSelect">Select Sentence: </label>
-          <select id="sentenceSelect" onchange="loadSelectedSentence()">
-           </select>
+          <button id="morningReminder" class="reminder-button" onclick="toggleReminder('morning')" title="Enable practice during morning timeframe.">Morning</button>
+           <button id="noonReminder" class="reminder-button" onclick="toggleReminder('noon')" title="Enable practice during noon timeframe.">Noon</button>
+           <button id="eveningReminder" class="reminder-button" onclick="toggleReminder('evening')" title="Enable practice during evening timeframe.">Evening</button>
+           <button class="reminder-button" onclick="set369()" title="Enable all timeframes for practice.">3-6-9</button>
+      </div>
+      <div class="main-area">
+           <label for="sentenceSelect">Select Sentence: </label>
+           <select id="sentenceSelect" onchange="loadSelectedSentence()">
+            </select>
          <br><br>
-          <label for="addSentenceInput">Add Sentence: </label>
-         <input type="text" id="addSentenceInput">
-          <button onclick="addSentence()">Add</button>
-          <br><br>
-          <button onclick="setOption(1)">Option 1 (Placeholders)</button>
-          <button onclick="setOption(2)">Option 2 (Retry)</button>
-           <p> Input option: <span id="optionDisplay">1</span></p>
-            <p> Current Timeframe: <span id="timeFrameDisplay">Unknown</span></p>
+           <label for="addSentenceInput">Add Sentence: </label>
+          <input type="text" id="addSentenceInput">
+           <button onclick="addSentence()">Add</button>
+           <br><br>
+         <button onclick="setOption(1)">Option 1 (Placeholders)</button>
+           <button onclick="setOption(2)">Option 2 (Retry)</button>
+            <p> Input option: <span id="optionDisplay">1</span></p>
+             <p> Current Timeframe: <span id="timeFrameDisplay">Unknown</span></p>
             <p>Remaining Repetitions: <span id="repetitionDisplay"></span></p>
             <div class="progress-container">
             <div id="progressBar" class="progress-bar"></div>
-            </div>
-          <div id="feedbackText" class="feedback-text" style="display: none"></div>
+             </div>
+         <div id="feedbackText" class="feedback-text" style="display: none"></div>
      </div>
 
     <div id="inputContainer" class="container">
           <!-- Input boxes will be dynamically added here using Javascript -->
     </div>
-    </div>
+ </div>
 
-  <div id="statsPage">
+ <div id="statsPage">
    <div class="stats-container">
-          <div class="stats-header">Daily Stats:</div>
-           <div class="stats-item">Morning: Attempts: <span id="dailyMorningAttempts">0</span>, Successes: <span id="dailyMorningSuccesses">0</span></div>
-            <div class="stats-item">Noon: Attempts: <span id="dailyNoonAttempts">0</span>, Successes: <span id="dailyNoonSuccesses">0</span></div>
-             <div class="stats-item">Evening: Attempts: <span id="dailyEveningAttempts">0</span>, Successes: <span id="dailyEveningSuccesses">0</span></div>
-        <div class="stats-header">Weekly Stats:</div>
-          <div class="stats-item">Morning: Attempts: <span id="weeklyMorningAttempts">0</span>, Successes: <span id="weeklyMorningSuccesses">0</span></div>
+         <div class="stats-header">Daily Stats:</div>
+         <div class="stats-item">Morning: Attempts: <span id="dailyMorningAttempts">0</span>, Successes: <span id="dailyMorningSuccesses">0</span></div>
+         <div class="stats-item">Noon: Attempts: <span id="dailyNoonAttempts">0</span>, Successes: <span id="dailyNoonSuccesses">0</span></div>
+          <div class="stats-item">Evening: Attempts: <span id="dailyEveningAttempts">0</span>, Successes: <span id="dailyEveningSuccesses">0</span></div>
+      <div class="stats-header">Weekly Stats:</div>
+        <div class="stats-item">Morning: Attempts: <span id="weeklyMorningAttempts">0</span>, Successes: <span id="weeklyMorningSuccesses">0</span></div>
          <div class="stats-item">Noon: Attempts: <span id="weeklyNoonAttempts">0</span>, Successes: <span id="weeklyNoonSuccesses">0</span></div>
-            <div class="stats-item">Evening: Attempts: <span id="weeklyEveningAttempts">0</span>, Successes: <span id="weeklyEveningSuccesses">0</span></div>
-     </div>
-  </div>
+        <div class="stats-item">Evening: Attempts: <span id="weeklyEveningAttempts">0</span>, Successes: <span id="weeklyEveningSuccesses">0</span></div>
+   </div>
+ </div>
   <div id="settingsPage">
-      <div class="settings-container">
+     <div class="settings-container">
           <label for="subliminalToggle">Enable Subliminal Features</label>
           <input type="checkbox" id="subliminalToggle" onclick="toggleSubliminal()">
-           <label for="customAffirmations">Custom Affirmations: </label>
-         <textarea id="customAffirmations" rows="4" cols="50"></textarea>
+          <label for="customAffirmations">Custom Affirmations: </label>
+          <textarea id="customAffirmations" rows="4" cols="50"></textarea>
          <button onclick="saveCustomAffirmations()">Save Affirmations</button>
-        <br><br>
-         <button onclick="clearAllData()" title="Clear all practice data, settings and user defined sentences.">Clear All Data</button>
-          <button onclick="resetStats()" title="Clear all tracking statistics, but not other settings.">Reset Stats</button>
-      </div>
+         <br><br>
+        <button onclick="clearAllData()" title="Clear all practice data, settings and user defined sentences.">Clear All Data</button>
+        <button onclick="resetStats()" title="Clear all tracking statistics, but not other settings.">Reset Stats</button>
+     </div>
   </div>
-    <script>
+  <script>
       function showPage(pageId) {
-         const fillPage = document.getElementById('fillPage');
+          const fillPage = document.getElementById('fillPage');
          const settingsPage = document.getElementById('settingsPage');
-          const statsPage = document.getElementById('statsPage');
+         const statsPage = document.getElementById('statsPage');
 
-           fillPage.style.display = 'none';
-           settingsPage.style.display = 'none';
-           statsPage.style.display = 'none';
-         document.getElementById(pageId).style.display = 'block';
+          fillPage.style.display = 'none';
+          settingsPage.style.display = 'none';
+          statsPage.style.display = 'none';
+       document.getElementById(pageId).style.display = 'block';
 
-      }
-    </script>
-    <script>
+     }
+  </script>
+  <script>
         // ---- Timeframe Constants and Functions ----
           const MORNING_START = 6;
           const MORNING_END = 11;
-          const NOON_START = 11;
-          const NOON_END = 16;
+         const NOON_START = 11;
+         const NOON_END = 16;
           const EVENING_START = 16;
           const EVENING_END = 23;
 
 
            function getCurrentTimeframe() {
                 const now = new Date();
-                const hour = now.getHours();
-                if (hour >= MORNING_START && hour < MORNING_END) {
+               const hour = now.getHours();
+                 if (hour >= MORNING_START && hour < MORNING_END) {
                     return "morning";
-                } else if (hour >= NOON_START && hour < NOON_END) {
-                    return "noon";
-                } else if (hour >= EVENING_START && hour <= EVENING_END) {
-                    return "evening";
+                 } else if (hour >= NOON_START && hour < NOON_END) {
+                     return "noon";
+                 } else if (hour >= EVENING_START && hour <= EVENING_END) {
+                      return "evening";
                 } else {
-                    return null;
-                }
-            }
+                      return null;
+               }
+          }
 
           function getRepetitionCounts(timeFrame){
-                if(timeFrame === 'morning'){
-                  return 3;
+                 if(timeFrame === 'morning'){
+                    return 3;
+               }
+                 if(timeFrame === 'noon'){
+                   return 6;
                 }
-                if(timeFrame === 'noon'){
-                  return 6;
-                }
-                if(timeFrame === 'evening'){
+               if(timeFrame === 'evening'){
                     return 9
-                }
-                 return 0; //Default number
-           }
+               }
+                  return 0; //Default number
+          }
 
 
         // ---- Reminder Settings ----
-        let currentOption = 1; // Default to option 1
-        let sentences = {
+       let currentOption = 1; // Default to option 1
+       let sentences = {
            "The quick brown fox jumps over the lazy dog": "Sentence 1: The quick brown fox...",
             "A journey of a thousand miles begins with a single step": "Sentence 2: A journey of a thousand...",
-           "To be or not to be that is the question": "Sentence 3: To be or not to be...",
-             "The best is yet to come": "Sentence 4: The best is yet to come",
-        };
-         let currentSentence = "";
+          "To be or not to be that is the question": "Sentence 3: To be or not to be...",
+            "The best is yet to come": "Sentence 4: The best is yet to come",
+         };
+        let currentSentence = "";
          let userAddedSentences = JSON.parse(localStorage.getItem('userAddedSentences')) || {};
-          let reminderSettings = JSON.parse(localStorage.getItem('reminderSettings')) || {
-                morning: false,
-               noon: false,
-                 evening: false
+         let reminderSettings = JSON.parse(localStorage.getItem('reminderSettings')) || {
+               morning: false,
+                noon: false,
+                evening: false
             };
-           let subliminalEnabled = JSON.parse(localStorage.getItem('subliminalEnabled')) || true; //Default
-        let customAffirmations = JSON.parse(localStorage.getItem('customAffirmations')) || [
-                "I am capable.",
+         let subliminalEnabled = JSON.parse(localStorage.getItem('subliminalEnabled')) || true; //Default
+       let customAffirmations = JSON.parse(localStorage.getItem('customAffirmations')) || [
+              "I am capable.",
                 "I am strong.",
                 "I am confident.",
-               "I am improving.",
+                "I am improving.",
                "I am focused.",
-                 "I am resilient."
+                "I am resilient."
             ];
 
-           function set369(){
-              reminderSettings.morning = true;
-                 reminderSettings.noon = true;
-                reminderSettings.evening = true;
-                updateReminderUI();
-                saveReminderSettings();
-           }
-           function toggleReminder(reminder){
-                reminderSettings[reminder] = !reminderSettings[reminder];
-               updateReminderUI();
+        function set369(){
+             reminderSettings.morning = true;
+               reminderSettings.noon = true;
+             reminderSettings.evening = true;
+            updateReminderUI();
+            saveReminderSettings();
+         }
+          function toggleReminder(reminder){
+               reminderSettings[reminder] = !reminderSettings[reminder];
+             updateReminderUI();
               saveReminderSettings();
-          }
+        }
 
         function updateReminderUI() {
             const morningButton = document.getElementById("morningReminder");
-            const noonButton = document.getElementById("noonReminder");
-             const eveningButton = document.getElementById("eveningReminder");
+           const noonButton = document.getElementById("noonReminder");
+           const eveningButton = document.getElementById("eveningReminder");
 
-            morningButton.classList.toggle('active', reminderSettings.morning);
+          morningButton.classList.toggle('active', reminderSettings.morning);
            noonButton.classList.toggle('active', reminderSettings.noon);
-           eveningButton.classList.toggle('active', reminderSettings.evening);
+         eveningButton.classList.toggle('active', reminderSettings.evening);
        }
-        function saveReminderSettings(){
+       function saveReminderSettings(){
             localStorage.setItem('reminderSettings', JSON.stringify(reminderSettings));
-       }
-        function toggleSubliminal() {
+      }
+       function toggleSubliminal() {
             subliminalEnabled = !subliminalEnabled;
             localStorage.setItem('subliminalEnabled', JSON.stringify(subliminalEnabled));
-              updateUI();
-          }
-         function saveCustomAffirmations() {
-              const customAffirmationsText = document.getElementById('customAffirmations').value;
-               customAffirmations = customAffirmationsText.split('\n').filter(Boolean); // Split, remove empty, store
-               localStorage.setItem('customAffirmations', JSON.stringify(customAffirmations));
-        }
+           updateUI();
+         }
+        function saveCustomAffirmations() {
+             const customAffirmationsText = document.getElementById('customAffirmations').value;
+              customAffirmations = customAffirmationsText.split('\n').filter(Boolean); // Split, remove empty, store
+              localStorage.setItem('customAffirmations', JSON.stringify(customAffirmations));
+         }
 
 
         // ---- Sentence and Input Management ----
@@ -327,333 +336,336 @@
             selectElement.innerHTML = ""; // Clear options
 
             // Load default sentences
-            for (const key in sentences) {
-                let option = document.createElement("option");
-                 option.value = key;
-                 option.text = sentences[key];
-               selectElement.add(option);
-            }
-              //Load user added sentences
-           for (const key in userAddedSentences) {
-              let option = document.createElement("option");
+           for (const key in sentences) {
+               let option = document.createElement("option");
                option.value = key;
-             option.text = "User Added: " + key;
-               selectElement.add(option);
+                option.text = sentences[key];
+                selectElement.add(option);
+          }
+           //Load user added sentences
+          for (const key in userAddedSentences) {
+               let option = document.createElement("option");
+                option.value = key;
+                option.text = "User Added: " + key;
+              selectElement.add(option);
            }
 
-          if (currentSentence === ""){
-              currentSentence = Object.keys(sentences)[0]
+           if (currentSentence === ""){
+               currentSentence = Object.keys(sentences)[0]
             }
 
-            selectElement.value = currentSentence;  // Set the selected item after rendering list
-         }
+             selectElement.value = currentSentence;  // Set the selected item after rendering list
+       }
 
-          function addSentence(){
+       function addSentence(){
             const addSentenceInput = document.getElementById("addSentenceInput");
-            const newSentence = addSentenceInput.value.trim();
-            if (!newSentence){
-               showFeedback("Error: Sentence can not be empty");
-               return;
+             const newSentence = addSentenceInput.value.trim();
+              if (!newSentence){
+                showFeedback("Error: Sentence can not be empty");
+                 return;
+             }
+              if (newSentence && !userAddedSentences[newSentence]){
+                    userAddedSentences[newSentence] = newSentence;
+                 localStorage.setItem('userAddedSentences', JSON.stringify(userAddedSentences));
+                 currentSentence = newSentence;
+                populateSentenceSelect();
+                  generateInputBoxes();
             }
-            if (newSentence && !userAddedSentences[newSentence]){
-                  userAddedSentences[newSentence] = newSentence;
-               localStorage.setItem('userAddedSentences', JSON.stringify(userAddedSentences));
-               currentSentence = newSentence;
-             populateSentenceSelect();
-               generateInputBoxes();
-           }
             else {
-                showFeedback("Error: Sentence already exists or is invalid.");
-           }
-         }
-       function loadSelectedSentence(){
-            const selectElement = document.getElementById("sentenceSelect");
-            currentSentence = selectElement.value;
-             generateInputBoxes();
+                  showFeedback("Error: Sentence already exists or is invalid.");
+            }
         }
+        function loadSelectedSentence(){
+            const selectElement = document.getElementById("sentenceSelect");
+             currentSentence = selectElement.value;
+           generateInputBoxes();
+       }
 
-        function setOption(option) {
-             currentOption = option;
-             document.getElementById("optionDisplay").innerText = option;
+         function setOption(option) {
+            currentOption = option;
+            document.getElementById("optionDisplay").innerText = option;
             generateInputBoxes();
         }
 
 
         // --- Local Storage Management for Practice Status ---
-        function getPracticeStatus(){
-              return JSON.parse(localStorage.getItem('practiceStatus')) || {};
-           }
+       function getPracticeStatus(){
+             return JSON.parse(localStorage.getItem('practiceStatus')) || {};
+        }
 
         function setPracticeStatus(practiceData){
-             localStorage.setItem('practiceStatus', JSON.stringify(practiceData));
-         }
-        function getTrackingData(){
-              return JSON.parse(localStorage.getItem('trackingData')) || {
-                  daily: {
-                      morning: { attempts: 0, successes: 0 },
-                       noon: { attempts: 0, successes: 0 },
-                        evening: { attempts: 0, successes: 0 }
-                  },
-                  weekly: {
-                      morning: { attempts: 0, successes: 0 },
-                       noon: { attempts: 0, successes: 0 },
-                        evening: { attempts: 0, successes: 0 }
-                   }
-              };
-          }
-
-            function setTrackingData(trackingData){
-                localStorage.setItem('trackingData', JSON.stringify(trackingData));
-           }
-
-        function clearAllData(){
-              localStorage.clear();
-              //Re-render the HTML
-                populateSentenceSelect();
-              generateInputBoxes();
-             updateReminderUI();
-             updateUI();
-              startSentencePractice();
-          }
-         function resetStats() {
-             let trackingData = getTrackingData();
-               trackingData.daily.morning.attempts = 0;
-              trackingData.daily.morning.successes = 0;
-             trackingData.daily.noon.attempts = 0;
-             trackingData.daily.noon.successes = 0;
-              trackingData.daily.evening.attempts = 0;
-               trackingData.daily.evening.successes = 0;
-
-            trackingData.weekly.morning.attempts = 0;
-              trackingData.weekly.morning.successes = 0;
-            trackingData.weekly.noon.attempts = 0;
-               trackingData.weekly.noon.successes = 0;
-             trackingData.weekly.evening.attempts = 0;
-            trackingData.weekly.evening.successes = 0;
-           setTrackingData(trackingData);
-              updateUI();
-            showFeedback("Tracking statistics have been reset.")
+              localStorage.setItem('practiceStatus', JSON.stringify(practiceData));
         }
-         function generateInputBoxes() {
-             const inputContainer = document.getElementById("inputContainer");
-           inputContainer.innerHTML = "";  // Clear existing boxes
+        function getTrackingData(){
+            return JSON.parse(localStorage.getItem('trackingData')) || {
+                   daily: {
+                       morning: { attempts: 0, successes: 0 },
+                      noon: { attempts: 0, successes: 0 },
+                       evening: { attempts: 0, successes: 0 }
+                  },
+                   weekly: {
+                        morning: { attempts: 0, successes: 0 },
+                       noon: { attempts: 0, successes: 0 },
+                        evening: { attempts: 0, successes: 0 }
+                    }
+              };
+         }
+
+          function setTrackingData(trackingData){
+             localStorage.setItem('trackingData', JSON.stringify(trackingData));
+         }
+
+      function clearAllData(){
+             localStorage.clear();
+             //Re-render the HTML
+              populateSentenceSelect();
+              generateInputBoxes();
+            updateReminderUI();
+            updateUI();
+           startSentencePractice();
+      }
+        function resetStats() {
+              let trackingData = getTrackingData();
+              trackingData.daily.morning.attempts = 0;
+               trackingData.daily.morning.successes = 0;
+              trackingData.daily.noon.attempts = 0;
+              trackingData.daily.noon.successes = 0;
+             trackingData.daily.evening.attempts = 0;
+             trackingData.daily.evening.successes = 0;
+
+             trackingData.weekly.morning.attempts = 0;
+             trackingData.weekly.morning.successes = 0;
+              trackingData.weekly.noon.attempts = 0;
+              trackingData.weekly.noon.successes = 0;
+              trackingData.weekly.evening.attempts = 0;
+             trackingData.weekly.evening.successes = 0;
+            setTrackingData(trackingData);
+           updateUI();
+           showFeedback("Tracking statistics have been reset.")
+       }
+        function generateInputBoxes() {
+            const inputContainer = document.getElementById("inputContainer");
+             inputContainer.innerHTML = "";  // Clear existing boxes
             updateUI();
 
              let words = currentSentence.split(" ");
-            const progressBar = document.getElementById('progressBar');
+              const progressBar = document.getElementById('progressBar');
               progressBar.style.width = '0%';
             for (let i = 0; i < words.length; i++) {
-                   let input_box = document.createElement("input");
-                   input_box.type = "text";
-                  input_box.classList.add("input-box");
-                   let indicator = document.createElement("span");
-                     indicator.classList.add("input-box-indicator");
-                   input_box.appendChild(indicator);
-                  input_box.setAttribute("data-index", i);
-                   input_box.setAttribute("data-expected-word", words[i]); //Store expected word
-                 if(currentOption === 1){
-                      input_box.placeholder = words[i];
+                  let input_box = document.createElement("input");
+                  input_box.type = "text";
+                 input_box.classList.add("input-box");
+                  let indicator = document.createElement("span");
+                   indicator.classList.add("input-box-indicator");
+                     input_box.appendChild(indicator);
+                    input_box.setAttribute("data-index", i);
+                    input_box.setAttribute("data-expected-word", words[i]); //Store expected word
+                   if(currentOption === 1){
+                        input_box.placeholder = words[i];
                   }
 
-                    input_box.addEventListener('input', function(){
-                     handleInput(this); // Handle input validation
-                   })
-                   inputContainer.appendChild(input_box);
-           }
-            let timeFrame = getCurrentTimeframe();
-            if(timeFrame == null) return;
-             let practiceStatus = getPracticeStatus();
-            let repetitions = 0;
-         if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-               repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
-          }
-           if(repetitions === getRepetitionCounts(timeFrame)){
-                 showFeedback("Get Ready!");
+                     input_box.addEventListener('input', function(){
+                       handleInput(this); // Handle input validation
+                    })
+                  inputContainer.appendChild(input_box);
             }
+            let timeFrame = getCurrentTimeframe();
+           if(timeFrame == null) return;
+            let practiceStatus = getPracticeStatus();
+            let repetitions = 0;
+            if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
+                 repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
+             }
+            if(repetitions === getRepetitionCounts(timeFrame)){
+                  showFeedback("Get Ready!");
+             }
         }
 
-         function startSentencePractice(){
-              let timeFrame = getCurrentTimeframe();
-                if(timeFrame == null) return; // Can only proceed with timeFrame
-                 let practiceStatus = getPracticeStatus();
-                let repetitionCounts = getRepetitionCounts(timeFrame);
-               if(!practiceStatus[timeFrame]) {
-                    practiceStatus[timeFrame] = {};
+          function startSentencePractice(){
+               let timeFrame = getCurrentTimeframe();
+                 if(timeFrame == null) return; // Can only proceed with timeFrame
+               let practiceStatus = getPracticeStatus();
+               let repetitionCounts = getRepetitionCounts(timeFrame);
+                if(!practiceStatus[timeFrame]) {
+                   practiceStatus[timeFrame] = {};
                  }
-               if (!practiceStatus[timeFrame][currentSentence] || practiceStatus[timeFrame][currentSentence].completed === true) { // If sentence is not started for timeframe or was completed before, reset
-                      practiceStatus[timeFrame][currentSentence] = { attempts: 0, successes: 0, timesCompleted: 0, completed: false}
-                }
+                if (!practiceStatus[timeFrame][currentSentence] || practiceStatus[timeFrame][currentSentence].completed === true) { // If sentence is not started for timeframe or was completed before, reset
+                       practiceStatus[timeFrame][currentSentence] = { attempts: 0, successes: 0, timesCompleted: 0, completed: false}
+              }
                 practiceStatus[timeFrame][currentSentence].attempts++;
                 setPracticeStatus(practiceStatus) //Save to local storage
-                updateUI();
+                 updateUI();
          }
 
-        function completedSequence(){
-           let timeFrame = getCurrentTimeframe();
-            if(timeFrame == null) return;
-            let practiceStatus = getPracticeStatus();
+         function completedSequence(){
+            let timeFrame = getCurrentTimeframe();
+             if(timeFrame == null) return;
+             let practiceStatus = getPracticeStatus();
             let trackingData = getTrackingData();
-             let repetitionCounts = getRepetitionCounts(timeFrame);
-               if(!practiceStatus[timeFrame] || !practiceStatus[timeFrame][currentSentence]) return; // Should always exist
-                practiceStatus[timeFrame][currentSentence].timesCompleted++;
+            let repetitionCounts = getRepetitionCounts(timeFrame);
+                if(!practiceStatus[timeFrame] || !practiceStatus[timeFrame][currentSentence]) return; // Should always exist
+                  practiceStatus[timeFrame][currentSentence].timesCompleted++;
 
 
-               if(practiceStatus[timeFrame][currentSentence].timesCompleted >= repetitionCounts){ //If completed then set to true and increment success
-                    practiceStatus[timeFrame][currentSentence].completed = true;
-                    trackingData.daily[timeFrame].successes++
+                if(practiceStatus[timeFrame][currentSentence].timesCompleted >= repetitionCounts){ //If completed then set to true and increment success
+                     practiceStatus[timeFrame][currentSentence].completed = true;
+                     trackingData.daily[timeFrame].successes++
                     trackingData.weekly[timeFrame].successes++;
                       showFeedback("Success! You completed the sequence.");
                   }
-                 else {
-                     showFeedback("Completed a repetition, keep going!");
-               }
-               setTrackingData(trackingData);
-               setPracticeStatus(practiceStatus)
-               updateUI(); //Update visual for current status.
-        }
+                  else {
+                      showFeedback("Completed a repetition, keep going!");
+                  }
 
-          function showFeedback(text){
-              const feedbackText = document.getElementById('feedbackText');
-                feedbackText.innerText = text;
-               feedbackText.style.display = 'block';
-
-                 setTimeout(function() {
-                     feedbackText.style.display = 'none';
-                 }, 2000);
+                 setTrackingData(trackingData);
+                 setPracticeStatus(practiceStatus)
+                 updateUI(); //Update visual for current status.
          }
-           let backgroundColorIndex = 0;
-          const backgroundColors = ["#f0f0f0", "#e0e0e0", "#d0d0d0", "#c0c0c0"]; //Define subtle color shifts
-       function changeBackgroundColor() {
-                const body = document.body;
-                body.style.backgroundColor = backgroundColors[backgroundColorIndex];
-                 backgroundColorIndex = (backgroundColorIndex + 1) % backgroundColors.length;
-          }
 
-        let affirmationIndex = 0; // Track which index of the array we are on.
-        function showAffirmation() {
-            if (!subliminalEnabled) return; // Prevent affirmation when off
-             const feedbackText = document.getElementById('feedbackText');
-             feedbackText.innerText = customAffirmations[affirmationIndex];
-             feedbackText.style.display = 'block';
+         function showFeedback(text){
+               const feedbackText = document.getElementById('feedbackText');
+                feedbackText.innerText = text;
+                feedbackText.classList.add("show");
 
                setTimeout(function() {
-                  feedbackText.style.display = 'none';
-              }, 1500);
-            affirmationIndex = (affirmationIndex + 1) % customAffirmations.length;
-          }
+                   feedbackText.classList.remove("show");
+              }, 2000);
+         }
+           let backgroundColorIndex = 0;
+           const backgroundColors = ["#f0f0f0", "#e0e0e0", "#d0d0d0", "#c0c0c0"]; //Define subtle color shifts
+        function changeBackgroundColor() {
+               const body = document.body;
+               body.style.backgroundColor = backgroundColors[backgroundColorIndex];
+                  backgroundColorIndex = (backgroundColorIndex + 1) % backgroundColors.length;
+            }
+
+         let affirmationIndex = 0; // Track which index of the array we are on.
+        function showAffirmation() {
+             if (!subliminalEnabled) return; // Prevent affirmation when off
+               const feedbackText = document.getElementById('feedbackText');
+                feedbackText.innerText = customAffirmations[affirmationIndex];
+                feedbackText.classList.add("show");
+
+              setTimeout(function() {
+                   feedbackText.classList.remove("show");
+               }, 1500);
+             affirmationIndex = (affirmationIndex + 1) % customAffirmations.length;
+         }
+
           function handleInput(box){
-               let input_text = box.value;
-             let indicator = box.querySelector('.input-box-indicator');
-              if(currentOption === 1) return; // No need to validate
-                let index = box.getAttribute("data-index");
-                 let expected_word = box.getAttribute("data-expected-word");
+              let input_text = box.value;
+            let indicator = box.querySelector('.input-box-indicator');
+               if(currentOption === 1) return; // No need to validate
+                  let index = box.getAttribute("data-index");
+                let expected_word = box.getAttribute("data-expected-word");
                let attempts = box.getAttribute("data-attempts") || 0; //Get retry attemps
 
-              if (attempts < 3){
-                  if (input_text === expected_word) {
-                       box.classList.add("input-box-success");
-                      box.classList.remove("input-box-error");
-                      box.disabled=true;
-                      indicator.textContent = '✓';
-                       indicator.style.display = "inline"
+                 if (attempts < 3){
+                     if (input_text === expected_word) {
+                         box.classList.add("input-box-success");
+                        box.classList.remove("input-box-error");
+                         box.disabled=true;
+                           indicator.textContent = '✓';
+                          indicator.style.display = "inline"
 
-                   }else{
-                      box.classList.add("input-box-error");
-                      box.classList.remove("input-box-success");
-                       attempts++;
-                        box.setAttribute("data-attempts", attempts);
-                        indicator.textContent = 'X'
-                      indicator.style.display = "inline"
-                      if(attempts >= 3){
-                         box.classList.add("input-box-disabled");
+                     }else{
+                        box.classList.add("input-box-error");
+                        box.classList.remove("input-box-success");
+                         attempts++;
+                          box.setAttribute("data-attempts", attempts);
+                            indicator.textContent = 'X'
+                            indicator.style.display = "inline"
+                        if(attempts >= 3){
+                            box.classList.add("input-box-disabled");
                             box.disabled = true; //disable input
-                     }
-                 }
-            }else{
-                 box.classList.add("input-box-disabled");
-              }
+                        }
+                    }
+                }else{
+                     box.classList.add("input-box-disabled");
+                }
 
-             let completed = true;
-            //Loop and check
+              let completed = true;
+                //Loop and check
                 const inputBoxes = document.querySelectorAll('#inputContainer .input-box');
-                inputBoxes.forEach((input) => {
+              inputBoxes.forEach((input) => {
                     if (!input.classList.contains("input-box-success")){
                          completed = false; // Break on first failed box
-                    }
-               })
+                  }
+           })
 
              if(completed){
-                  completedSequence();
-              }
-       }
-        function updateUI(){
+                   completedSequence();
+            }
+         }
+      function updateUI(){
             const timeFrameDisplay = document.getElementById('timeFrameDisplay');
-           const repetitionDisplay = document.getElementById("repetitionDisplay");
+            const repetitionDisplay = document.getElementById("repetitionDisplay");
             const dailyMorningAttemptsDisplay = document.getElementById('dailyMorningAttempts');
              const dailyMorningSuccessesDisplay = document.getElementById('dailyMorningSuccesses');
             const dailyNoonAttemptsDisplay = document.getElementById('dailyNoonAttempts');
              const dailyNoonSuccessesDisplay = document.getElementById('dailyNoonSuccesses');
             const dailyEveningAttemptsDisplay = document.getElementById('dailyEveningAttempts');
-             const dailyEveningSuccessesDisplay = document.getElementById('dailyEveningSuccesses');
+           const dailyEveningSuccessesDisplay = document.getElementById('dailyEveningSuccesses');
 
            const weeklyMorningAttemptsDisplay = document.getElementById('weeklyMorningAttempts');
            const weeklyMorningSuccessesDisplay = document.getElementById('weeklyMorningSuccesses');
             const weeklyNoonAttemptsDisplay = document.getElementById('weeklyNoonAttempts');
             const weeklyNoonSuccessesDisplay = document.getElementById('weeklyNoonSuccesses');
-           const weeklyEveningAttemptsDisplay = document.getElementById('weeklyEveningAttempts');
-           const weeklyEveningSuccessesDisplay = document.getElementById('weeklyEveningSuccesses');
-           const progressBar = document.getElementById('progressBar');
+             const weeklyEveningAttemptsDisplay = document.getElementById('weeklyEveningAttempts');
+            const weeklyEveningSuccessesDisplay = document.getElementById('weeklyEveningSuccesses');
+            const progressBar = document.getElementById('progressBar');
 
-                let timeFrame = getCurrentTimeframe();
-                 timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
+
+               let timeFrame = getCurrentTimeframe();
+               timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
                 let practiceStatus = getPracticeStatus();
-               let trackingData = getTrackingData();
-                let repetitions = 0;
+                let trackingData = getTrackingData();
+               let repetitions = 0;
                 if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-                    repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
-                 }
-                 repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
-               if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
-                    let maxRepetitions =  getRepetitionCounts(timeFrame)
-                     let timesCompleted  = practiceStatus[timeFrame][currentSentence].timesCompleted || 0;
-                    let progress = (timesCompleted/maxRepetitions) * 100;
-                   progressBar.style.width = progress + '%';
-                 }else{
-                       progressBar.style.width = '0%';
-                  }
+                     repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
+                }
+               repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
+                if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
+                   let maxRepetitions =  getRepetitionCounts(timeFrame)
+                    let timesCompleted  = practiceStatus[timeFrame][currentSentence].timesCompleted || 0;
+                     let progress = (timesCompleted/maxRepetitions) * 100;
+                    progressBar.style.width = progress + '%';
+               }else{
+                    progressBar.style.width = '0%';
+               }
 
                   dailyMorningAttemptsDisplay.innerText = trackingData.daily.morning.attempts;
                   dailyMorningSuccessesDisplay.innerText = trackingData.daily.morning.successes;
-                dailyNoonAttemptsDisplay.innerText = trackingData.daily.noon.attempts;
+                  dailyNoonAttemptsDisplay.innerText = trackingData.daily.noon.attempts;
                 dailyNoonSuccessesDisplay.innerText = trackingData.daily.noon.successes;
-                dailyEveningAttemptsDisplay.innerText = trackingData.daily.evening.attempts;
-               dailyEveningSuccessesDisplay.innerText = trackingData.daily.evening.successes;
-                weeklyMorningAttemptsDisplay.innerText = trackingData.weekly.morning.attempts;
-                weeklyMorningSuccessesDisplay.innerText = trackingData.weekly.morning.successes;
-                weeklyNoonAttemptsDisplay.innerText = trackingData.weekly.noon.attempts;
-               weeklyNoonSuccessesDisplay.innerText = trackingData.weekly.noon.successes;
-               weeklyEveningAttemptsDisplay.innerText = trackingData.weekly.evening.attempts;
-              weeklyEveningSuccessesDisplay.innerText = trackingData.weekly.evening.successes;
-            if(subliminalEnabled){
-                changeBackgroundColor();
-                showAffirmation();
-            }
+                 dailyEveningAttemptsDisplay.innerText = trackingData.daily.evening.attempts;
+                  dailyEveningSuccessesDisplay.innerText = trackingData.daily.evening.successes;
+                 weeklyMorningAttemptsDisplay.innerText = trackingData.weekly.morning.attempts;
+                  weeklyMorningSuccessesDisplay.innerText = trackingData.weekly.morning.successes;
+                  weeklyNoonAttemptsDisplay.innerText = trackingData.weekly.noon.attempts;
+                  weeklyNoonSuccessesDisplay.innerText = trackingData.weekly.noon.successes;
+                 weeklyEveningAttemptsDisplay.innerText = trackingData.weekly.evening.attempts;
+                 weeklyEveningSuccessesDisplay.innerText = trackingData.weekly.evening.successes;
+
+               if(subliminalEnabled){
+                     changeBackgroundColor();
+                      showAffirmation();
+                  }
+
         }
+         // ---- Initialization ----
+        const subliminalToggle = document.getElementById("subliminalToggle");
+          subliminalToggle.checked = subliminalEnabled;
+        const customAffirmationsText = document.getElementById('customAffirmations');
+         customAffirmationsText.value = customAffirmations.join('\n');
 
-       // ---- Initialization ----
-       const subliminalToggle = document.getElementById("subliminalToggle");
-         subliminalToggle.checked = subliminalEnabled;
-       const customAffirmationsText = document.getElementById('customAffirmations');
-        customAffirmationsText.value = customAffirmations.join('\n');
-
-     populateSentenceSelect();
-        generateInputBoxes();
-      updateReminderUI();
+      populateSentenceSelect();
+      generateInputBoxes();
+       updateReminderUI();
         updateUI();
-       startSentencePractice(); //Initial start of sequence
-     setInterval(updateUI, 1000); //Update every second to show the correct time frame
-     showPage("fillPage");
-
-    </script>
+      startSentencePractice(); //Initial start of sequence
+      setInterval(updateUI, 1000); //Update every second to show the correct time frame
+        showPage("fillPage");
+  </script>
 </body>
 </html>
