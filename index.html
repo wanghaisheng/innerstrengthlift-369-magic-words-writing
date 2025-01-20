@@ -1,125 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Practice Challenge</title>
-    <style>
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 20px;
-        }
-        .input-box {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-            min-width: 80px;
-            transition: border-color 0.3s;
-        }
-       .input-box-error{
-           border-color: red;
-       }
-       .input-box-success{
-          border-color: green;
-       }
-       .input-box-disabled{
-          background-color: #eee;
-           cursor: not-allowed;
-       }
-      .reminder-button {
-        padding: 10px 15px;
-          margin: 5px;
-          border-radius: 4px;
-          background-color: #f0f0f0;
-            border: 1px solid #ccc;
-        cursor: pointer;
-        }
-
-         .reminder-button.active {
-              background-color: #007bff;
-              color: white;
-        }
-
-         .reminder-settings {
-            margin-bottom: 20px;
-        }
-           .stats-container {
-                margin: 20px;
-                 border: 1px solid #ccc;
-                padding: 10px;
-                 border-radius: 4px;
-            }
-         .stats-header {
-               font-size: 1.2em;
-             font-weight: bold;
-             margin-bottom: 5px;
-        }
-         .stats-item {
-                margin: 5px 0;
-           }
-        .progress-container {
-            width: 100%;
-            height: 10px;
-            background-color: #eee;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background-color: green;
-            border-radius: 5px;
-            width: 0; /*initial width*/
-            transition: width 0.3s ease-in-out;
-        }
-
-
-    </style>
-</head>
-<body>
-    <div style="margin: 20px;" class="reminder-settings">
-           <p>Reminders:</p>
-           <button id="morningReminder" class="reminder-button" onclick="toggleReminder('morning')">Morning</button>
-            <button id="noonReminder" class="reminder-button" onclick="toggleReminder('noon')">Noon</button>
-            <button id="eveningReminder" class="reminder-button" onclick="toggleReminder('evening')">Evening</button>
-              <button class="reminder-button" onclick="set369()">3-6-9</button>
-    </div>
-    <div style="margin: 20px;">
-         <label for="sentenceSelect">Select Sentence: </label>
-        <select id="sentenceSelect" onchange="loadSelectedSentence()">
-        </select>
-        <br><br>
-        <label for="addSentenceInput">Add Sentence: </label>
-        <input type="text" id="addSentenceInput">
-        <button onclick="addSentence()">Add</button>
-        <br><br>
-        <button onclick="setOption(1)">Option 1 (Placeholders)</button>
-        <button onclick="setOption(2)">Option 2 (Retry)</button>
-         <p> Input option: <span id="optionDisplay">1</span></p>
-         <p> Current Timeframe: <span id="timeFrameDisplay">Unknown</span></p>
-         <p>Remaining Repetitions: <span id="repetitionDisplay"></span></p>
-        <div class="progress-container">
-           <div id="progressBar" class="progress-bar"></div>
-        </div>
-    </div>
-
-     <div class="stats-container">
-          <div class="stats-header">Daily Stats:</div>
-           <div class="stats-item">Morning: Attempts: <span id="dailyMorningAttempts">0</span>, Successes: <span id="dailyMorningSuccesses">0</span></div>
-           <div class="stats-item">Noon: Attempts: <span id="dailyNoonAttempts">0</span>, Successes: <span id="dailyNoonSuccesses">0</span></div>
-           <div class="stats-item">Evening: Attempts: <span id="dailyEveningAttempts">0</span>, Successes: <span id="dailyEveningSuccesses">0</span></div>
-        <div class="stats-header">Weekly Stats:</div>
-         <div class="stats-item">Morning: Attempts: <span id="weeklyMorningAttempts">0</span>, Successes: <span id="weeklyMorningSuccesses">0</span></div>
-           <div class="stats-item">Noon: Attempts: <span id="weeklyNoonAttempts">0</span>, Successes: <span id="weeklyNoonSuccesses">0</span></div>
-            <div class="stats-item">Evening: Attempts: <span id="weeklyEveningAttempts">0</span>, Successes: <span id="weeklyEveningSuccesses">0</span></div>
-      </div>
-    <div id="inputContainer" class="container">
-        <!-- Input boxes will be dynamically added here using Javascript -->
-    </div>
-
     <script>
         // ---- Timeframe Constants and Functions ----
           const MORNING_START = 6;
@@ -287,6 +165,8 @@
              updateUI();
 
             let words = currentSentence.split(" ");
+            const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = '0%';
              for (let i = 0; i < words.length; i++) {
                   let input_box = document.createElement("input");
                     input_box.type = "text";
@@ -301,10 +181,11 @@
                       handleInput(this); // Handle input validation
                     })
                    inputContainer.appendChild(input_box);
-
                }
+
           }
-         function startSentencePractice(){
+
+          function startSentencePractice(){
                 let timeFrame = getCurrentTimeframe();
                 if(timeFrame == null) return; // Can only proceed with timeFrame
                 let practiceStatus = getPracticeStatus();
@@ -365,17 +246,17 @@
                 }else{
                       box.classList.add("input-box-disabled");
                   }
-               let completed = true;
+                 let completed = true;
                 //Loop and check
                 const inputBoxes = document.querySelectorAll('#inputContainer .input-box');
                 inputBoxes.forEach((input) => {
-                   if (!input.classList.contains("input-box-success")){
-                         completed = false; // Break on first failed box
+                    if (!input.classList.contains("input-box-success")){
+                      completed = false; // Break on first failed box
                    }
                 })
 
                 if(completed){
-                      completedSequence();
+                    completedSequence();
                 }
 
 
@@ -396,18 +277,19 @@
           const weeklyNoonSuccessesDisplay = document.getElementById('weeklyNoonSuccesses');
            const weeklyEveningAttemptsDisplay = document.getElementById('weeklyEveningAttempts');
            const weeklyEveningSuccessesDisplay = document.getElementById('weeklyEveningSuccesses');
-                const progressBar = document.getElementById('progressBar');
+            const progressBar = document.getElementById('progressBar');
+
 
                 let timeFrame = getCurrentTimeframe();
                  timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
                  let practiceStatus = getPracticeStatus();
                  let trackingData = getTrackingData();
                   let repetitions = 0;
-                 if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
+                if(timeFrame && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
                       repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
-                  }
+                   }
                  repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
-                  if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
+                if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
                      let maxRepetitions =  getRepetitionCounts(timeFrame)
                      let timesCompleted  = practiceStatus[timeFrame][currentSentence].timesCompleted || 0;
                        let progress = (timesCompleted/maxRepetitions) * 100;
@@ -429,17 +311,16 @@
                 weeklyEveningAttemptsDisplay.innerText = trackingData.weekly.evening.attempts;
                  weeklyEveningSuccessesDisplay.innerText = trackingData.weekly.evening.successes;
 
+
           }
 
        // ---- Initialization ----
       populateSentenceSelect();
       generateInputBoxes();
       updateReminderUI();
-       updateUI();
-       startSentencePractice(); //Initial start of sequence
-    setInterval(updateUI, 1000); //Update every second to show the correct time frame
+    updateUI();
+      startSentencePractice(); //Initial start of sequence
+      setInterval(updateUI, 1000); //Update every second to show the correct time frame
 
 
     </script>
-</body>
-</html>
