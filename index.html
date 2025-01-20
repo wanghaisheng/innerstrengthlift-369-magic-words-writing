@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Input Boxes</title>
+    <title>Word Practice Challenge</title>
     <style>
         .container {
             display: flex;
@@ -60,11 +60,27 @@
          .stats-item {
                 margin: 5px 0;
            }
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: green;
+            border-radius: 5px;
+            width: 0; /*initial width*/
+            transition: width 0.3s ease-in-out;
+        }
+
 
     </style>
 </head>
 <body>
-   <div style="margin: 20px;" class="reminder-settings">
+    <div style="margin: 20px;" class="reminder-settings">
            <p>Reminders:</p>
            <button id="morningReminder" class="reminder-button" onclick="toggleReminder('morning')">Morning</button>
             <button id="noonReminder" class="reminder-button" onclick="toggleReminder('noon')">Noon</button>
@@ -75,16 +91,19 @@
          <label for="sentenceSelect">Select Sentence: </label>
         <select id="sentenceSelect" onchange="loadSelectedSentence()">
         </select>
-         <br><br>
+        <br><br>
         <label for="addSentenceInput">Add Sentence: </label>
         <input type="text" id="addSentenceInput">
         <button onclick="addSentence()">Add</button>
-          <br><br>
+        <br><br>
         <button onclick="setOption(1)">Option 1 (Placeholders)</button>
         <button onclick="setOption(2)">Option 2 (Retry)</button>
          <p> Input option: <span id="optionDisplay">1</span></p>
-          <p> Current Timeframe: <span id="timeFrameDisplay">Unknown</span></p>
-           <p>Remaining Repetitions: <span id="repetitionDisplay"></span></p>
+         <p> Current Timeframe: <span id="timeFrameDisplay">Unknown</span></p>
+         <p>Remaining Repetitions: <span id="repetitionDisplay"></span></p>
+        <div class="progress-container">
+           <div id="progressBar" class="progress-bar"></div>
+        </div>
     </div>
 
      <div class="stats-container">
@@ -262,14 +281,12 @@
                  localStorage.setItem('trackingData', JSON.stringify(trackingData));
             }
 
-
-
-        function generateInputBoxes() {
-             const inputContainer = document.getElementById("inputContainer");
+       function generateInputBoxes() {
+            const inputContainer = document.getElementById("inputContainer");
            inputContainer.innerHTML = "";  // Clear existing boxes
-              updateUI();  // Updates UI
-            let words = currentSentence.split(" ");
+             updateUI();
 
+            let words = currentSentence.split(" ");
              for (let i = 0; i < words.length; i++) {
                   let input_box = document.createElement("input");
                     input_box.type = "text";
@@ -286,9 +303,8 @@
                    inputContainer.appendChild(input_box);
 
                }
-
           }
-          function startSentencePractice(){
+         function startSentencePractice(){
                 let timeFrame = getCurrentTimeframe();
                 if(timeFrame == null) return; // Can only proceed with timeFrame
                 let practiceStatus = getPracticeStatus();
@@ -301,7 +317,7 @@
                 }
                 practiceStatus[timeFrame][currentSentence].attempts++;
                   setPracticeStatus(practiceStatus) //Save to local storage
-                updateUI();
+                 updateUI();
            }
 
          function completedSequence(){
@@ -323,6 +339,7 @@
                   setPracticeStatus(practiceStatus)
                   updateUI(); //Update visual for current status.
              }
+
            function handleInput(box){
                let input_text = box.value;
                 if(currentOption === 1) return; // No need to validate
@@ -348,17 +365,17 @@
                 }else{
                       box.classList.add("input-box-disabled");
                   }
-                let completed = true;
+               let completed = true;
                 //Loop and check
                 const inputBoxes = document.querySelectorAll('#inputContainer .input-box');
                 inputBoxes.forEach((input) => {
-                    if (!input.classList.contains("input-box-success")){
-                      completed = false; // Break on first failed box
+                   if (!input.classList.contains("input-box-success")){
+                         completed = false; // Break on first failed box
                    }
                 })
 
                 if(completed){
-                   completedSequence();
+                      completedSequence();
                 }
 
 
@@ -366,7 +383,6 @@
         function updateUI(){
                const timeFrameDisplay = document.getElementById('timeFrameDisplay');
              const repetitionDisplay = document.getElementById("repetitionDisplay");
-
             const dailyMorningAttemptsDisplay = document.getElementById('dailyMorningAttempts');
             const dailyMorningSuccessesDisplay = document.getElementById('dailyMorningSuccesses');
              const dailyNoonAttemptsDisplay = document.getElementById('dailyNoonAttempts');
@@ -380,6 +396,7 @@
           const weeklyNoonSuccessesDisplay = document.getElementById('weeklyNoonSuccesses');
            const weeklyEveningAttemptsDisplay = document.getElementById('weeklyEveningAttempts');
            const weeklyEveningSuccessesDisplay = document.getElementById('weeklyEveningSuccesses');
+                const progressBar = document.getElementById('progressBar');
 
                 let timeFrame = getCurrentTimeframe();
                  timeFrameDisplay.innerText = timeFrame ?  timeFrame : 'Not within any timeframe';
@@ -390,7 +407,14 @@
                       repetitions = getRepetitionCounts(timeFrame) - (practiceStatus[timeFrame][currentSentence].timesCompleted || 0) ;
                   }
                  repetitionDisplay.innerText = repetitions < 0 ? 0: repetitions;
-
+                  if(timeFrame  && practiceStatus[timeFrame] && practiceStatus[timeFrame][currentSentence]){
+                     let maxRepetitions =  getRepetitionCounts(timeFrame)
+                     let timesCompleted  = practiceStatus[timeFrame][currentSentence].timesCompleted || 0;
+                       let progress = (timesCompleted/maxRepetitions) * 100;
+                     progressBar.style.width = progress + '%';
+                   }else{
+                            progressBar.style.width = '0%';
+                     }
 
                   dailyMorningAttemptsDisplay.innerText = trackingData.daily.morning.attempts;
                    dailyMorningSuccessesDisplay.innerText = trackingData.daily.morning.successes;
@@ -411,7 +435,7 @@
       populateSentenceSelect();
       generateInputBoxes();
       updateReminderUI();
-    updateUI();
+       updateUI();
        startSentencePractice(); //Initial start of sequence
     setInterval(updateUI, 1000); //Update every second to show the correct time frame
 
